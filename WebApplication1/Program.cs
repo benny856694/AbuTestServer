@@ -55,7 +55,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                         personId: "123",
                         profileImage: profileImageBase64,
                         remarks: "Some Remarks"));
-                sb.AppendLine($"timezone: {req.timezone}"); //newly added
+                sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
                 sb.AppendLine(
                     $"face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
             }
