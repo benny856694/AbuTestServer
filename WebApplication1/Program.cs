@@ -27,7 +27,6 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
         var sb = new StringBuilder();
         sb.AppendLine("Request Headers:");
         _ = request.Headers.Select(h=>sb.AppendLine($"\t{h.Key}: {h.Value}")).ToArray();
-        logger.LogInformation(sb.ToString());
         
         object rep = "unknown request";
         switch (req.cmd)
