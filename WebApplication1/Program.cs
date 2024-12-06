@@ -1,4 +1,5 @@
 using System.Runtime;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,11 +20,15 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
+var jsonSerializerOptions = new JsonSerializerOptions{WriteIndented = true};
 
 app.MapPost("/upload/record", async (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
      
         object rep = "unknown request";
+        var sb = new StringBuilder("headers: \n");
+        _ = request.Headers.Select(h=>sb.AppendLine($"{h.Key}: {h.Value}")).ToArray();
+        logger.LogInformation(sb.ToString());
         switch (req.cmd)
         {
             case "heart beat":
