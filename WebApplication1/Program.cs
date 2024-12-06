@@ -22,7 +22,7 @@ app.UseHttpsRedirection();
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 var jsonSerializerOptions = new JsonSerializerOptions{WriteIndented = true};
 
-app.MapPost("/upload/record", async (ILogger<Program> logger, Face req, HttpRequest request) =>
+app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
      
         object rep = "unknown request";
