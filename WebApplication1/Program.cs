@@ -28,7 +28,7 @@ app.MapPost("/upload/record", async (ILogger<Program> logger, Face req, HttpRequ
         {
             case "heart beat":
                 rep = "any text is ok";
-                logger.LogInformation($"Got heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
+                logger.LogInformation($"heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
                 break;
             case "face":
             {
@@ -47,7 +47,7 @@ app.MapPost("/upload/record", async (ILogger<Program> logger, Face req, HttpRequ
                         remarks: "Some Remarks"));
             }
                 logger.LogInformation(
-                    $"Got face upload ({request.HttpContext.Connection.RemoteIpAddress}), replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+                    $"face upload ({request.HttpContext.Connection.RemoteIpAddress}), replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
 
 
                 break;
