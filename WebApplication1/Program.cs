@@ -1,8 +1,4 @@
-using System.Runtime;
 using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +20,7 @@ var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg")
 
 app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
-     
+
         var sb = new StringBuilder();
         sb.AppendLine($"Request received ({request.HttpContext.Connection.RemoteIpAddress})");
         sb.AppendLine("headers:");
@@ -32,7 +28,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
         {
             sb.AppendLine($"\t{header.Key}: {header.Value}");
         }
-   
+
         object rep = "unknown request";
         switch (req.cmd)
         {
@@ -41,25 +37,25 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 sb.AppendLine($"heart beat");
                 break;
             case "face":
-            {
-                rep = new FaceReply(
-                    "ACK",
-                    "face",
-                    0,
-                    req.cap_time,
-                    req.sequence_no,
-                    new Data(
-                        is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
-                        match_success: Random.Shared.Next(0, 2) is 1,
-                        personName: "Jon Done",
-                        personId: "123",
-                        profileImage: profileImageBase64,
-                        remarks: "Some Remarks"));
-                sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
-                sb.AppendLine(
-                    $"face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
-            }
-             
+                {
+                    rep = new FaceReply(
+                        "ACK",
+                        "face",
+                        0,
+                        req.cap_time,
+                        req.sequence_no,
+                        new Data(
+                            is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
+                            match_success: Random.Shared.Next(0, 2) is 1,
+                            personName: "Jon Done",
+                            personId: "123",
+                            profileImage: profileImageBase64,
+                            remarks: "Some Remarks"));
+                    sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
+                    sb.AppendLine(
+                        $"face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+                }
+
 
 
                 break;
@@ -67,9 +63,9 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 break;
 
         }
-        
+
         logger.LogInformation(sb.ToString());
-        
+
         return rep;
     })
     .WithName("UploadRecord");
@@ -88,7 +84,7 @@ public record FaceReply(
 );
 
 public record Data(
-    bool is_output_on_device,
+    bool is_output_on_device, //if show popup window on device
     bool match_success,
     string personName,
     string personId,
