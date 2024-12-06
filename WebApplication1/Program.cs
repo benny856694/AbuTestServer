@@ -24,14 +24,24 @@ app.MapPost("/upload/record", (ILogger<Program> logger,  Face req) =>
         switch (req.cmd)
         {
             case "heart beat":
-                rep = "response to heart beat";
+                rep = "any text is ok";
+                logger.LogInformation("Got heart beat");
                 break;
             default:
-                rep = new FaceReply("ACK", "face", 0, req.cap_time, req.sequence_no,
-                    new Data(is_output_on_device: Random.Shared.Next(0, 2) is 1,
-                        match_success: Random.Shared.Next(0, 2) is 1, personName: "Jone Done", personId: "123",
-                        profileImage: profileImageBase64, remarks: "Some Remarks"));
-                logger.LogInformation($"is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+                rep = new FaceReply(
+                    "ACK", 
+                    "face", 
+                    0, 
+                    req.cap_time, 
+                    req.sequence_no,
+                    new Data(
+                        is_output_on_device: Random.Shared.Next(0, 2) is 1,
+                        match_success: Random.Shared.Next(0, 2) is 1, 
+                        personName: "Jon Done", 
+                        personId: "123",
+                        profileImage: profileImageBase64, 
+                        remarks: "Some Remarks"));
+                logger.LogInformation($"Got face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
                 break;
         }
         return rep;
