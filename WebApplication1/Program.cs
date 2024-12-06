@@ -1,4 +1,6 @@
 using System.Runtime;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,31 +20,40 @@ app.UseHttpsRedirection();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 
-app.MapPost("/upload/record", (ILogger<Program> logger,  Face req) =>
+app.MapPost("/upload/record", async (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
-        object rep;
+     
+        object rep = "unknown request";
         switch (req.cmd)
         {
             case "heart beat":
                 rep = "any text is ok";
-                logger.LogInformation("Got heart beat");
+                logger.LogInformation($"Got heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
                 break;
-            default:
+            case "face":
+            {
                 rep = new FaceReply(
-                    "ACK", 
-                    "face", 
-                    0, 
-                    req.cap_time, 
+                    "ACK",
+                    "face",
+                    0,
+                    req.cap_time,
                     req.sequence_no,
                     new Data(
                         is_output_on_device: Random.Shared.Next(0, 2) is 1,
-                        match_success: Random.Shared.Next(0, 2) is 1, 
-                        personName: "Jon Done", 
+                        match_success: Random.Shared.Next(0, 2) is 1,
+                        personName: "Jon Done",
                         personId: "123",
-                        profileImage: profileImageBase64, 
+                        profileImage: profileImageBase64,
                         remarks: "Some Remarks"));
-                logger.LogInformation($"Got face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+            }
+                logger.LogInformation(
+                    $"Got face upload ({request.HttpContext.Connection.RemoteIpAddress}), replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+
+
                 break;
+            default:
+                break;
+
         }
         return rep;
     })
@@ -70,6 +81,8 @@ public record Data(
     string remarks
 );
 
+public record GeneralRequest(string cmd);
+
 
 public record Face(
     string addr_name,
@@ -81,7 +94,7 @@ public record Face(
     string device_no,
     string device_sn,
     int is_realtime,
-    Match? match,
+    Match match,
     int match_failed_reson,
     int match_result,
     bool overall_pic_flag,
@@ -121,10 +134,12 @@ public record Person(
     string hat,
     int rotate_angle,
     string sex,
-    int temperatur,
+    float temperatur,
     int turn_angle,
     int wg_card_id
 );
+
+
 
 // ReSharper restore InconsistentNaming
 // ReSharper restore NotAccessedPositionalProperty.Global
