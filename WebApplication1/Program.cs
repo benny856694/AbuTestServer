@@ -20,20 +20,21 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
-var jsonSerializerOptions = new JsonSerializerOptions{WriteIndented = true};
 
 app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
      
-        object rep = "unknown request";
-        var sb = new StringBuilder("headers: \n");
-        _ = request.Headers.Select(h=>sb.AppendLine($"{h.Key}: {h.Value}")).ToArray();
+        var sb = new StringBuilder();
+        sb.AppendLine("Request Headers:");
+        _ = request.Headers.Select(h=>sb.AppendLine($"\t{h.Key}: {h.Value}")).ToArray();
         logger.LogInformation(sb.ToString());
+        
+        object rep = "unknown request";
         switch (req.cmd)
         {
             case "heart beat":
                 rep = "any text is ok";
-                logger.LogInformation($"heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
+                sb.AppendLine($"heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
                 break;
             case "face":
             {
@@ -44,14 +45,14 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                     req.cap_time,
                     req.sequence_no,
                     new Data(
-                        is_output_on_device: Random.Shared.Next(0, 2) is 1,
+                        is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
                         match_success: Random.Shared.Next(0, 2) is 1,
                         personName: "Jon Done",
                         personId: "123",
                         profileImage: profileImageBase64,
                         remarks: "Some Remarks"));
             }
-                logger.LogInformation(
+                sb.AppendLine(
                     $"face upload ({request.HttpContext.Connection.RemoteIpAddress}), replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
 
 
@@ -60,6 +61,9 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 break;
 
         }
+        
+        logger.LogInformation(sb.ToString());
+        
         return rep;
     })
     .WithName("UploadRecord");
