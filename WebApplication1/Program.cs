@@ -2,6 +2,7 @@ using System.Runtime;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,15 +26,19 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
     {
      
         var sb = new StringBuilder();
-        sb.AppendLine("Request Headers:");
-        _ = request.Headers.Select(h=>sb.AppendLine($"\t{h.Key}: {h.Value}")).ToArray();
-        
+        sb.AppendLine($"Request received ({request.HttpContext.Connection.RemoteIpAddress})");
+        sb.AppendLine("headers:");
+        foreach (var header in request.Headers)
+        {
+            sb.AppendLine($"\t{header.Key}: {header.Value}");
+        }
+   
         object rep = "unknown request";
         switch (req.cmd)
         {
             case "heart beat":
                 rep = "any text is ok";
-                sb.AppendLine($"heart beat ({request.HttpContext.Connection.RemoteIpAddress})");
+                sb.AppendLine($"heart beat");
                 break;
             case "face":
             {
@@ -50,9 +55,11 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                         personId: "123",
                         profileImage: profileImageBase64,
                         remarks: "Some Remarks"));
-            }
+                sb.AppendLine($"timezone: {req.timezone}"); //newly added
                 sb.AppendLine(
-                    $"face upload ({request.HttpContext.Connection.RemoteIpAddress}), replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+                    $"face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
+            }
+             
 
 
                 break;
@@ -109,7 +116,8 @@ public record Face(
     Person person,
     int sequence_no,
     string version,
-    bool video_flag
+    bool video_flag,
+    string timezone //newly added 
 );
 
 public record Closeup_pic(
