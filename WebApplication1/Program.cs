@@ -39,11 +39,8 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
             case "face":
                 {
                     rep = new FaceReply(
-                        "ACK",
-                        "face",
-                        0,
-                        req.cap_time,
                         req.sequence_no,
+                        req.cap_time,
                         new GatewayControl(),
                         new Data(
                             is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
@@ -76,13 +73,13 @@ app.Run();
 // ReSharper disable InconsistentNaming
 // ReSharper disable NotAccessedPositionalProperty.Global
 public record FaceReply(
-    string reply,
-    string cmd,
-    int code,
-    string cap_time,
     int sequence_no,
-    GatewayControl? gateway_ctrl, //door control
-    Data? data
+    string cap_time,
+    GatewayControl? gateway_ctrl = null, //door control
+    Data? data = null,
+    string cmd = "face",
+    string reply = "ACK",
+    int code = 0
 );
 
 public record Data(
