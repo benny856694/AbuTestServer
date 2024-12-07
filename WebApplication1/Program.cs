@@ -88,7 +88,7 @@ public record FaceReply(
     string cap_time,
     GatewayControl? gateway_ctrl = null, //door control
     Data? data = null,
-    TextDisplay? text_display = null, //display text on screen
+    TextDisplay? text_display = null, //display single-line text on screen
     TextDisplay[]? text_displays = null, //multiline text display
     string cmd = "face",
     string reply = "ACK",
