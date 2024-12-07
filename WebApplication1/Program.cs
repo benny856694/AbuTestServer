@@ -68,8 +68,8 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 }
                 break;
             default:
-                logger.LogInformation("unknown request");
-                return Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
+                sb.AppendLine("Unknown request");
+                rep = Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
                 break;
 
         }
