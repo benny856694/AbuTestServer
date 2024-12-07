@@ -38,7 +38,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 break;
             case "face":
                 {
-                    rep = new FaceReply
+                    var faceReply = new FaceReply
                     (
                         req.sequence_no,
                         req.cap_time,
@@ -59,16 +59,17 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                             "WELCOME!"
                             )
                         );
+
+                    rep = faceReply;
                     
                     sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
                     sb.AppendLine(
-                        $"face upload, replay: is_output_on_device: {((FaceReply)rep).data!.is_output_on_device}");
+                        $"face upload, replay: {nameof(faceReply.data.is_output_on_device)}: {faceReply.data?.is_output_on_device}");
                 }
-
-
-
                 break;
             default:
+                logger.LogInformation("unknown request");
+                return Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
                 break;
 
         }
