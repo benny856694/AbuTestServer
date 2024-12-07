@@ -89,6 +89,7 @@ public record FaceReply(
     GatewayControl? gateway_ctrl = null, //door control
     Data? data = null,
     TextDisplay? text_display = null, //display text on screen
+    TextDisplay[]? text_displays = null, //multiline text display
     string cmd = "face",
     string reply = "ACK",
     int code = 0
