@@ -44,6 +44,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                         0,
                         req.cap_time,
                         req.sequence_no,
+                        new GatewayControl(),
                         new Data(
                             is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
                             match_success: Random.Shared.Next(0, 2) is 1,
@@ -80,7 +81,8 @@ public record FaceReply(
     int code,
     string cap_time,
     int sequence_no,
-    Data data
+    GatewayControl? gateway_ctrl, //door control
+    Data? data
 );
 
 public record Data(
@@ -91,6 +93,14 @@ public record Data(
     string profileImage,
     string remarks
 );
+
+public record GatewayControl(
+    string device_type = "gpio", 
+    int device_no = 1, //1 or 2
+    string ctrl_mode = "force"
+);
+
+
 
 public record GeneralRequest(string cmd);
 
