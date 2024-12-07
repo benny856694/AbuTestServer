@@ -38,7 +38,8 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 break;
             case "face":
                 {
-                    rep = new FaceReply(
+                    rep = new FaceReply
+                    (
                         req.sequence_no,
                         req.cap_time,
                         new GatewayControl(),
@@ -48,7 +49,17 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                             personName: "Jon Done",
                             personId: "123",
                             profileImage: profileImageBase64,
-                            remarks: "Some Remarks"));
+                            remarks: "Some Remarks"),
+                        new TextDisplay(
+                            new Position(0, 100),
+                            1000,
+                            100,
+                            1,
+                            "0xffffffff",
+                            "WELCOME!"
+                            )
+                        );
+                    
                     sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
                     sb.AppendLine(
                         $"face upload, replay: is_output_on_device: {(rep as FaceReply)!.data.is_output_on_device}");
@@ -77,6 +88,7 @@ public record FaceReply(
     string cap_time,
     GatewayControl? gateway_ctrl = null, //door control
     Data? data = null,
+    TextDisplay? text_display = null, //display text on screen
     string cmd = "face",
     string reply = "ACK",
     int code = 0
@@ -97,6 +109,19 @@ public record GatewayControl(
     string ctrl_mode = "force"
 );
 
+public record TextDisplay(
+    Position position,
+    int alive_time, //active time in millisecond
+    int font_size, //100
+    int font_spacing, //1
+    string font_color, //ARGB, e.g. "0xffffffff"
+    string text 
+);
+
+public record Position(
+    int x,
+    int y
+);
 
 
 public record GeneralRequest(string cmd);
