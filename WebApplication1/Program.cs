@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Scalar.AspNetCore;
 
@@ -14,6 +15,16 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(); //add test UI, open at url: "/scalar/v1"
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            var url = $"{app.Urls.First()}/scalar/v1";
+            var info = new ProcessStartInfo(url) { UseShellExecute = true };
+            Process.Start(info);
+        });
+    });
 }
 
 app.UseHttpsRedirection();
