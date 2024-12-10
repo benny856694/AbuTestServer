@@ -1,6 +1,6 @@
+using Scalar.AspNetCore;
 using System.Diagnostics;
 using System.Text;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,7 +81,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                 }
                 break;
             default:
-                sb.AppendLine("Unknown request");
+                sb.AppendLine(@$"Unknown request: cmd: '{req.cmd}'");
                 rep = Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
                 break;
 
@@ -119,7 +119,8 @@ public record Data(
 );
 
 public record GatewayControl(
-    string device_type = "gpio", 
+    string device_type = "gpio",
+    string ctrl_type = "on",
     int device_no = 1, //1 or 2
     string ctrl_mode = "force"
 );
@@ -130,7 +131,7 @@ public record TextDisplay(
     int font_size, //100
     int font_spacing, //1
     string font_color, //ARGB, e.g. "0xffffffff"
-    string text 
+    string text
 );
 
 public record Position(
