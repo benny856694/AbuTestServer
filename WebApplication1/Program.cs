@@ -11,9 +11,10 @@ builder.Services.AddHttpLogging(cfg =>
     cfg.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.None;
     cfg.LoggingFields =
     Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestHeaders
+    | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestBody
     | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponseBody;
     cfg.RequestHeaders.Add("x-api-key");
-    cfg.CombineLogs = false;
+    cfg.CombineLogs = true;
 
 });
 
