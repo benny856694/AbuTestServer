@@ -1,12 +1,22 @@
 using Scalar.AspNetCore;
 using System.Diagnostics;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHttpLogging(cfg =>
+{
+    cfg.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.None;
+    cfg.LoggingFields =
+    Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestHeaders
+    | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponseBody;
+    cfg.RequestHeaders.Add("x-api-key");
+    cfg.CombineLogs = false;
+
+});
+
 
 var app = builder.Build();
 
@@ -29,25 +39,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseHttpLogging();
+
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 
 app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
     {
 
-        var sb = new StringBuilder();
-        sb.AppendLine($"Request received ({request.HttpContext.Connection.RemoteIpAddress})");
-        sb.AppendLine("headers:");
-        foreach (var header in request.Headers)
-        {
-            sb.AppendLine($"\t{header.Key}: {header.Value}");
-        }
 
         object rep = "unknown request";
         switch (req.cmd)
         {
             case "heart beat":
                 rep = "any text is ok";
-                sb.AppendLine($"heart beat");
                 break;
             case "face":
                 {
@@ -74,20 +78,14 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                         );
 
                     rep = faceReply;
-                    
-                    sb.AppendLine(@$"timezone: ""{req.timezone}"""); //newly added
-                    sb.AppendLine(
-                        $"face upload, replay: {nameof(faceReply.data.is_output_on_device)}: {faceReply.data?.is_output_on_device}");
                 }
                 break;
             default:
-                sb.AppendLine(@$"Unknown request: cmd: '{req.cmd}'");
                 rep = Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
                 break;
 
         }
 
-        logger.LogInformation(sb.ToString());
 
         return rep;
     })
