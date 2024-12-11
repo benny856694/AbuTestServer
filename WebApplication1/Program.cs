@@ -93,6 +93,8 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
 
 app.Run();
 
+#region models
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable NotAccessedPositionalProperty.Global
 public record FaceReply(
@@ -202,7 +204,7 @@ public record Person(
 // ReSharper restore InconsistentNaming
 // ReSharper restore NotAccessedPositionalProperty.Global
 
-
+#endregion
 
 
 
