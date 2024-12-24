@@ -47,11 +47,11 @@ if (app.Environment.IsDevelopment())
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 
-app.MapGet("/stats", (Stats s, HttpContext c) =>
+app.MapGet("/stats", async (Stats s, HttpContext c) =>
 {
     var uptime = s.CurrentTime - s.StartTime;
     c.Response.Headers["Content-Type"] = "text/html";
-    c.Response.WriteAsync($"<p><b>Uptime:</b> {uptime.ToString(@"dd\.hh\:mm\:ss")}</p>");
+    await c.Response.WriteAsync($"<p><b>Uptime:</b> {uptime.ToString(@"dd\.hh\:mm\:ss")}</p>");
 });
 
 
