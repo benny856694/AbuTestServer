@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using System.Diagnostics;
+using WebApplication1;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,9 @@ builder.Services.AddHttpLogging(cfg =>
     cfg.CombineLogs = true;
 
 });
+
+builder.Services.AddSingleton<Stats>();
+builder.Services.AddHostedService<UptimeCounterService>();
 
 
 var app = builder.Build();
@@ -40,57 +44,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseHttpLogging();
+//app.UseHttpLogging();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 
-app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
-    {
+app.MapGet("/stats", (Stats s, HttpContext c) =>
+{
+    var uptime = s.CurrentTime - s.StartTime;
+    c.Response.Headers["Content-Type"] = "text/html";
+    c.Response.WriteAsync($"<p><b>Uptime:</b> {uptime.ToString(@"dd\.hh\:mm\:ss")}</p>");
+});
 
-
-        object rep = "unknown request";
-        switch (req.cmd)
-        {
-            case "heart beat":
-                rep = "any text is ok";
-                break;
-            case "face":
-                {
-                    var faceReply = new FaceReply
-                    (
-                        req.sequence_no,
-                        req.cap_time,
-                        new GatewayControl(),
-                        new Data(
-                            is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
-                            match_success: Random.Shared.Next(0, 2) is 1,
-                            personName: "Jon Done",
-                            personId: "123",
-                            profileImage: profileImageBase64,
-                            remarks: "Some Remarks"),
-                        new TextDisplay(
-                            new Position(0, 100),
-                            1000,
-                            100,
-                            1,
-                            "0xffffffff",
-                            "WELCOME!"
-                            )
-                        );
-
-                    rep = faceReply;
-                }
-                break;
-            default:
-                rep = Results.Problem($"Unknown cmd: '{req.cmd}'", statusCode: 400);
-                break;
-
-        }
-
-
-        return rep;
-    })
-    .WithName("UploadRecord");
 
 app.Run();
 
