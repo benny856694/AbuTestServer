@@ -4,7 +4,7 @@ public class Stats
 {
     private readonly Lock _lock = new();
     private DateTime _currTime;
-    public DateTime StartTime { get; init; } = DateTime.UtcNow;
+    public DateTime StartTime { get; } = DateTime.Now;
 
     public DateTime CurrentTime
     {
