@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using System.Diagnostics;
 
@@ -17,6 +18,8 @@ builder.Services.AddHttpLogging(cfg =>
     cfg.CombineLogs = true;
 
 });
+
+builder.Services.Configure<WebApplication1.MyOptions>(builder.Configuration.GetSection("Options"));
 
 
 var app = builder.Build();
@@ -46,7 +49,7 @@ var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg")
 
 app.MapPost("/upload/record", (
     ILogger<Program> logger,
-    IConfiguration config,
+    IOptionsMonitor<WebApplication1.MyOptions> op,
     Face req,
     HttpRequest request) =>
     {
@@ -63,7 +66,7 @@ app.MapPost("/upload/record", (
                         req.sequence_no,
                         req.cap_time,
                         new GatewayControl(),
-                        config.GetValue<bool>("IsForAbu", false) is false ? null : new Data(
+                        op?.CurrentValue.IsForAbu is false ? null : new Data(
                             is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
                             match_success: Random.Shared.Next(0, 2) is 1,
                             personName: "Jon Done",
