@@ -66,7 +66,7 @@ app.MapPost("/upload/record", (
                         req.sequence_no,
                         req.cap_time,
                         new GatewayControl(),
-                        op?.CurrentValue.IsForAbu is false ? null : new Data(
+                        op.CurrentValue.IsForAbu is false ? null : new Data(
                             is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
                             match_success: Random.Shared.Next(0, 2) is 1,
                             personName: "Jon Done",
