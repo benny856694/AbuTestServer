@@ -44,10 +44,12 @@ app.UseHttpLogging();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
 
-app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest request) =>
+app.MapPost("/upload/record", (
+    ILogger<Program> logger,
+    IConfiguration config,
+    Face req,
+    HttpRequest request) =>
     {
-
-
         object rep = "unknown request";
         switch (req.cmd)
         {
@@ -61,7 +63,7 @@ app.MapPost("/upload/record", (ILogger<Program> logger, Face req, HttpRequest re
                         req.sequence_no,
                         req.cap_time,
                         new GatewayControl(),
-                        new Data(
+                        config.GetValue<bool>("IsForAbu", false) is false ? null : new Data(
                             is_output_on_device: Random.Shared.Next(0, 2) is 1, // if popup windows will be shown
                             match_success: Random.Shared.Next(0, 2) is 1,
                             personName: "Jon Done",
