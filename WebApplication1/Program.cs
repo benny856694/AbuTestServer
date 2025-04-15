@@ -16,6 +16,7 @@ builder.Services.AddHttpLogging(cfg =>
     | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponseBody;
     cfg.RequestHeaders.Add("x-api-key");
     cfg.CombineLogs = true;
+    cfg.RequestBodyLogLimit = 1024 * 1024 * 2;
 
 });
 
