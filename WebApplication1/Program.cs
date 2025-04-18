@@ -75,9 +75,9 @@ app.MapPost("/upload/record", (
                             profileImage: profileImageBase64,
                             remarks: "Some Remarks"),
                         new TextDisplay(
-                            new Position(0, 100),
+                            new Position(150, 350),
                             1000,
-                            100,
+                            120,
                             1,
                             "0xffffffff",
                             "WELCOME!"
