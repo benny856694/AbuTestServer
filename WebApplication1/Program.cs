@@ -44,6 +44,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    // Log the remote ip
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    if (logger is not null)
+    {
+        logger.LogInformation("Remote IP: {RemoteIp}", context.Connection.RemoteIpAddress);
+    }
+
+    await next(context);
+});
 app.UseHttpLogging();
 
 var profileImageBase64 = Convert.ToBase64String(File.ReadAllBytes("profile.jpg"));
